@@ -54,5 +54,10 @@ module.exports = {
     'react/boolean-prop-naming': 'error',
     'react/jsx-max-depth': ['warn', { max: 5 }],
     'import/no-default-export': 'error',
-  }
+  },
+  settings: {
+    "import/resolver": {
+      typescript: {} // this loads <rootdir>/tsconfig.json to eslint
+    },
+  },
 }
