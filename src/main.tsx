@@ -1,13 +1,13 @@
-import React from "react"
-import ReactDOM from "react-dom/client"
+import { Auth0Provider } from "@auth0/auth0-react"
 import { ConvexReactClient } from "convex/react"
 import { ConvexProviderWithAuth0 } from "convex/react-auth0"
-import { Auth0Provider } from "@auth0/auth0-react"
+import React from "react"
+import ReactDOM from "react-dom/client"
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
+import "./index.css"
+import { HomePage } from "./pages/Home.tsx"
 import { RootLayout } from "./pages/RootLayout.tsx"
 import { WelcomePage } from "./pages/Welcome.tsx"
-import { HomePage } from "./pages/Home.tsx"
-import "./index.css"
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
 
@@ -28,9 +28,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 			domain={import.meta.env.VITE_AUTH0_DOMAIN}
 			clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
 			authorizationParams={{
-				redirect_uri: "http://localhost:5173/home",
+				redirect_uri: `${window.location.origin}/home`,
 			}}
-			useRefreshTokens={true}
+			useRefreshTokens
 			cacheLocation="localstorage"
 		>
 			<ConvexProviderWithAuth0 client={convex}>
