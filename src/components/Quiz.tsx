@@ -1,40 +1,12 @@
 import Leaderboard from "./Leaderboard"
 import { Question } from "./Question"
 import { useState } from "react"
+import { Question as QuestionType } from "../types/quiz"
 
-const DUMMY_ANSWERS = [
-	{ id: "a", value: "Mallorca" },
-	{ id: "b", value: "United States" },
-	{ id: "c", value: "Germany" },
-	{ id: "d", value: "England" },
-]
-
-const DUMMY_ANSWERS2 = [
-	{ id: "a", value: "Poland" },
-	{ id: "b", value: "France" },
-	{ id: "c", value: "Austria" },
-	{ id: "d", value: "Vatican" },
-]
-
-const DUMMY_QUESTIONS = [
-	{
-		id: "abc",
-		value: "What country from listed below is the biggest?",
-		answers: DUMMY_ANSWERS,
-		correctAnswerId: "b",
-	},
-	{
-		id: "abcd",
-		value: "What country from listed below is the smallest?",
-		answers: DUMMY_ANSWERS2,
-		correctAnswerId: "d",
-	},
-]
-
-export function Quiz() {
+export function Quiz({ questions }: { questions: QuestionType[] }) {
 	const [activeQuestionIndex, setActiveQuestionIndex] = useState(0)
 
-	const activeQuestion = DUMMY_QUESTIONS[activeQuestionIndex]
+	const activeQuestion = questions[activeQuestionIndex]
 
 	return (
 		<div className="flex items-center justify-center px-4 py-4">
@@ -42,12 +14,12 @@ export function Quiz() {
 				{activeQuestion ? (
 					<Question
 						activeQuestion={activeQuestion}
-						onActiveQuestionChange={(value: number) =>
-							setActiveQuestionIndex(value)
+						onActiveQuestionChange={() =>
+							setActiveQuestionIndex((prevIndex) => prevIndex + 1)
 						}
 					/>
 				) : (
-					<Leaderboard numberOfQuestions={DUMMY_QUESTIONS.length} />
+					<Leaderboard numberOfQuestions={questions.length} />
 				)}
 			</div>
 		</div>
