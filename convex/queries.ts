@@ -7,5 +7,10 @@ export const getCategories = query({
 
 export const getLobbies = query({
 	args: {},
-	handler: (ctx) => ctx.db.query("lobbies").order("desc").collect(),
+	handler: (ctx) =>
+		ctx.db
+			.query("lobbies")
+			.filter((q) => q.neq(q.field("joinedPlayers"), q.field("maxPlayers")))
+			.order("desc")
+			.collect(),
 })

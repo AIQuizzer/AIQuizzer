@@ -16,3 +16,34 @@ export const createLobby = mutation({
 		})
 	},
 })
+
+export const joinLobby = mutation({
+	args: {
+		lobbyId: v.id("lobbies"),
+		player: PlayerSchema,
+	},
+	handler: async (ctx, args) => {
+		const lobby = await ctx.db.get(args.lobbyId)
+
+		if (!lobby) {
+			throw new Error("Lobby not found")
+		}
+
+		if (lobby.joinedPlayers >= lobby.maxPlayers) {
+			throw new Error("Lobby is full")
+		}
+
+		const isPlayerAlreadyInLobby = lobby.players.some(
+			(p) => p.id === args.player.id,
+		)
+
+		if (isPlayerAlreadyInLobby) {
+			return
+		}
+
+		await ctx.db.patch(args.lobbyId, {
+			players: [...lobby.players, args.player],
+			joinedPlayers: lobby.joinedPlayers + 1,
+		})
+	},
+})
