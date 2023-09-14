@@ -5,8 +5,10 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import "./index.css"
-import { HomePage } from "./pages/Home.tsx"
+import { FindLobby } from "./pages/FindLobby.tsx"
+import { MainMenu } from "./pages/MainMenu.tsx"
 import { RootLayout } from "./pages/RootLayout.tsx"
+import { SelectCategory } from "./pages/SelectCategory.tsx"
 import { WelcomePage } from "./pages/Welcome.tsx"
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
@@ -17,7 +19,9 @@ const router = createBrowserRouter([
 		element: <RootLayout />,
 		children: [
 			{ index: true, element: <WelcomePage /> },
-			{ path: "home", element: <HomePage /> },
+			{ path: "home", element: <MainMenu /> },
+			{ path: "lobbies", element: <FindLobby /> },
+			{ path: "categories", element: <SelectCategory /> },
 		],
 	},
 ])
