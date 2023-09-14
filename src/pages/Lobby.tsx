@@ -5,12 +5,17 @@ import { Quiz } from "../components/Quiz"
 import { useAction } from "convex/react"
 import { api } from "../../convex/_generated/api"
 import { Question } from "../types/quiz"
+import { Button } from "../ui/button"
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"
 
 const DUMMY_ANSWERS = [
 	{ id: "a", value: "Mallorca" },
 	{ id: "b", value: "United States" },
 	{ id: "c", value: "Germany" },
-	{ id: "d", value: "England" },
+	{
+		id: "d",
+		value: "England",
+	},
 ]
 
 const DUMMY_ANSWERS2 = [
@@ -107,24 +112,22 @@ export function Lobby() {
 							key={user.id}
 							className="flex flex-col items-center justify-center"
 						>
-							<img
-								src={user.image}
-								className="h-[100px] w-[100px] sm:h-[120px] sm:w-[120px]"
-							/>
+							<Avatar className="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px]">
+								<AvatarImage src={user.image} />
+								<AvatarFallback>User avatar</AvatarFallback>
+							</Avatar>
 							<p>{user.name}</p>
 						</li>
 					))}
 				</ul>
-				<button
+				<Button
 					onClick={() => setHasStarted(true)}
-					className="border-[1px] border-black px-3 py-1"
+					className="px-12 py-6 text-xl font-bold"
 				>
-					start
-				</button>
+					Start
+				</Button>
 			</div>
-			<button className="fixed bottom-[5%] right-[5%] rounded-md border-[1px] border-black bg-white px-5 py-1 hover:bg-gray-800 hover:text-white">
-				Leave
-			</button>
+			<Button className="fixed bottom-[5%] right-[5%] px-5 py-1">Leave</Button>
 		</div>
 	)
 

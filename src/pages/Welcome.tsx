@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { useConvexAuth } from "convex/react"
 import { useNavigate } from "react-router-dom"
+import { Button } from "../ui/button"
 
 export function WelcomePage() {
 	const { loginWithRedirect } = useAuth0()
@@ -14,12 +15,12 @@ export function WelcomePage() {
 			<div className="text-center">
 				<h1 className="text-4xl font-bold">Welcome to AiQuizzer</h1>
 				<p>Improve your skills by having fun!</p>
-				<button
+				<Button
 					onClick={() => loginWithRedirect()}
-					className="mx-auto mb-2 mt-5 block w-[90%] rounded-md border-2 px-5 py-3 font-semibold hover:bg-gray-800 hover:text-white"
+					className="mx-auto mt-4 w-[90%] py-6 text-lg font-bold hover:bg-gray-800 "
 				>
 					Sign in
-				</button>
+				</Button>
 			</div>
 		</div>
 	)

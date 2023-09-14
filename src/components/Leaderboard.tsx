@@ -1,3 +1,5 @@
+import { Button } from "../ui/button"
+
 const DUMMY_USERS = [
 	{
 		id: "qwe",
@@ -99,12 +101,8 @@ export default function Leaderboard({
 				</ul>
 
 				<div className="mt-4 flex justify-between">
-					<button className="rounded-sm border-[1px] border-gray-800 px-4 py-1">
-						exit
-					</button>
-					<button className="rounded-sm border-[1px] border-gray-800 px-4 py-1">
-						play again
-					</button>
+					<Button className="px-5 py-1">exit</Button>
+					<Button className="px-5 py-1">play again</Button>
 				</div>
 			</div>
 		</div>

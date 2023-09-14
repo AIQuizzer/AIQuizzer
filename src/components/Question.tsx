@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { ProgressBar } from "./ui/ProgressBar"
 import { Answer } from "../types/quiz"
 import { Question as QuestionType } from "../types/quiz"
+import { Button } from "../ui/button"
 
 interface QuestionProps {
 	activeQuestion: QuestionType
@@ -43,7 +44,7 @@ export function Question({
 
 	return (
 		<>
-			<div className="relative mb-5 h-[30px] w-full overflow-hidden rounded-xl border-[1px] border-black">
+			<div className="mb-1 h-[20px] overflow-hidden rounded-sm border-[1px] border-black">
 				<ProgressBar key={progressBarKey} />
 			</div>
 
@@ -55,11 +56,11 @@ export function Question({
 				{activeQuestion?.answers?.map((answer: Answer, index: number) => {
 					let backgroundColor =
 						index === 0
-							? "#26890c"
+							? "#208110"
 							: index === 1
-							? "#1368ce"
+							? "#0e508e"
 							: index === 2
-							? "#e21b3c"
+							? "#b91730"
 							: "#d89e00"
 
 					const isAnswerCorrect = answer.id === activeQuestion.correctAnswerId
@@ -83,10 +84,10 @@ export function Question({
 							: "0.5"
 
 					return (
-						<button
+						<Button
 							key={answer.id}
 							disabled={hasAnswered}
-							className={`flex items-center justify-center rounded-md py-[15%] opacity-100 hover:opacity-80`}
+							className={`flex items-center justify-center py-[15%] hover:opacity-80 sm:py-[25%] lg:py-[17%]`}
 							style={{
 								backgroundColor: backgroundColor,
 								cursor: hasAnswered ? "not-allowed" : "pointer",
@@ -94,11 +95,10 @@ export function Question({
 							}}
 							onClick={() => handleOptionChoose(answer)}
 						>
-							{/* change max width in characters */}
 							<h3 className="text-xl font-bold text-white sm:text-3xl">
 								{answer.value}
 							</h3>
-						</button>
+						</Button>
 					)
 				})}
 			</ul>
