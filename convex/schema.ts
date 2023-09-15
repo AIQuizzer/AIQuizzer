@@ -12,7 +12,6 @@ export default defineSchema({
 	lobbies: defineTable({
 		name: v.string(),
 		players: v.array(PlayerSchema),
-		joinedPlayers: v.number(),
 		maxPlayers: v.number(),
 	}),
 	categories: defineTable({

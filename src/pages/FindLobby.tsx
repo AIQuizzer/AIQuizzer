@@ -54,13 +54,13 @@ const Lobbies = () => {
 						})}
 					</div>
 					<p
-						aria-label={`Joined ${lobby.joinedPlayers} players out of ${lobby.maxPlayers}`}
+						aria-label={`Joined ${lobby.players.length} players out of ${lobby.maxPlayers}`}
 					>
-						{lobby.joinedPlayers} / {lobby.maxPlayers}
+						{lobby.players.length} / {lobby.maxPlayers}
 					</p>
 
 					<Button
-						disabled={lobby.joinedPlayers === lobby.maxPlayers}
+						disabled={lobby.players.length === lobby.maxPlayers}
 						onClick={async () => {
 							if (!user?.sub || !user?.name || !user?.picture) return
 
