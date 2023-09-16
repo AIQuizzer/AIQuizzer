@@ -57,6 +57,7 @@ export default function Leaderboard({
 }: {
 	numberOfQuestions: number
 }) {
+	const placeColors = ["#D4C000", "#C0C0C0", "#CD7F32"]
 	const sortedUsers = DUMMY_USERS.sort((a, b) => b.score - a.score)
 
 	return (
@@ -66,16 +67,9 @@ export default function Leaderboard({
 				<ul>
 					{sortedUsers.map((user: User, index: number) => {
 						const place = index + 1
-						const backgroundColor =
-							place === 1
-								? "gold"
-								: place === 2
-								? "#C0C0C0"
-								: place === 3
-								? "#CD7F32"
-								: ""
 
-						const color = place <= 3 ? "white" : ""
+						const backgroundColor = placeColors[index] || ""
+						const color = place <= 3 ? "text-white" : ""
 
 						return (
 							<li
@@ -83,8 +77,9 @@ export default function Leaderboard({
 								className="mb-3 flex w-[50vw] items-center border-[1px] border-gray-500 px-4 py-2"
 							>
 								<span
-									className="mr-4 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-gray-200 text-gray-500"
-									style={{ backgroundColor, color }}
+									className={`
+										mr-4 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-gray-200 text-gray-500 bg-[${backgroundColor}] ${color}
+									`}
 								>
 									{index + 1}
 								</span>

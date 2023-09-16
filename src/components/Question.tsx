@@ -3,6 +3,7 @@ import { ProgressBar } from "./ui/ProgressBar"
 import { Answer } from "../types/quiz"
 import { Question as QuestionType } from "../types/quiz"
 import { Button } from "../ui/button"
+import { cn } from "../lib"
 
 interface QuestionProps {
 	activeQuestion: QuestionType
@@ -16,6 +17,13 @@ export function Question({
 	const [hasAnswered, setHasAnwered] = useState(false)
 	const [chosenAnswer, setChosenAnswer] = useState<Answer | null>(null)
 	const [progressBarKey, setProgressBarKey] = useState(1)
+
+	const answerStyles = [
+		"bg-[#208110] hover:bg-[#339b28]",
+		"bg-[#0e508e] hover:bg-[#2d6aa9]",
+		"bg-[#b91730] hover:bg-[#dc263f]",
+		"bg-[#d89e00] hover:bg-[#f6ad0b]",
+	]
 
 	function handleOptionChoose(answer: Answer) {
 		setChosenAnswer(answer)
@@ -44,7 +52,7 @@ export function Question({
 
 	return (
 		<>
-			<div className="mb-1 h-[20px] overflow-hidden rounded-sm border-[1px] border-black">
+			<div className="mb-1 h-[20px] overflow-hidden rounded-md border-[1px] border-black">
 				<ProgressBar key={progressBarKey} />
 			</div>
 
@@ -54,45 +62,23 @@ export function Question({
 
 			<ul className="grid w-full grid-cols-1 gap-x-[2%] gap-y-2 sm:grid-cols-2 sm:gap-y-[6%]">
 				{activeQuestion?.answers?.map((answer: Answer, index: number) => {
-					let backgroundColor =
-						index === 0
-							? "#208110"
-							: index === 1
-							? "#0e508e"
-							: index === 2
-							? "#b91730"
-							: "#d89e00"
-
-					const isAnswerCorrect = answer.id === activeQuestion.correctAnswerId
 					const isChosenByUser = answer.id === chosenAnswer?.id
 
-					if (hasAnswered) {
-						if (isAnswerCorrect) {
-							backgroundColor = "green"
-						}
-
-						if (!isAnswerCorrect && isChosenByUser) {
-							backgroundColor = "red"
-						}
-					}
-
-					const opacity =
-						(hasAnswered &&
-							(isAnswerCorrect || (!isAnswerCorrect && isChosenByUser))) ||
-						!hasAnswered
-							? "1"
-							: "0.5"
+					const isAnswerCorrect =
+						hasAnswered && answer.id === activeQuestion.correctAnswerId
+					const isAnswerIncorrect = !isAnswerCorrect && isChosenByUser
 
 					return (
 						<Button
 							key={answer.id}
 							disabled={hasAnswered}
-							className={`flex items-center justify-center py-[15%] hover:opacity-80 sm:py-[25%] lg:py-[17%]`}
-							style={{
-								backgroundColor: backgroundColor,
-								cursor: hasAnswered ? "not-allowed" : "pointer",
-								opacity: opacity,
-							}}
+							className={cn(
+								`flex appearance-none items-center justify-center py-[15%] sm:py-[25%] lg:py-[17%] ${answerStyles[index]}`,
+								isAnswerCorrect &&
+									"bg-green-600 hover:bg-green-700 disabled:opacity-100",
+								isAnswerIncorrect &&
+									"bg-red-600 hover:bg-red-700 disabled:opacity-100",
+							)}
 							onClick={() => handleOptionChoose(answer)}
 						>
 							<h3 className="text-xl font-bold text-white sm:text-3xl">

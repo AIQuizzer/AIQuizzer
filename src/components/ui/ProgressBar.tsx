@@ -15,8 +15,8 @@ export function ProgressBar() {
 
 	return (
 		<div
-			className="mb-1 bg-zinc-950"
-			style={{ width: `${progressBarWidth}%`, height: "100%" }}
+			className={`mb-1 h-full bg-zinc-950`}
+			style={{ width: `${progressBarWidth}%` }}
 		/>
 	)
 }

@@ -25,7 +25,7 @@ export const getQuestions = action({
 			model: "gpt-3.5-turbo",
 		})
 
-		const answer = completion.choices[0].message.content
+		const answer = JSON.parse(completion.choices[0].message.content as string)
 		return answer
 	},
 })
