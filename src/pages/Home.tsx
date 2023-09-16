@@ -9,7 +9,11 @@ function Home() {
 	const { isAuthenticated, isLoading } = useConvexAuth()
 	const { user } = useAuth0()
 
-	return <div>Homepage</div>
+	return (
+		<div>
+			<p>Homepage</p>
+		</div>
+	)
 }
 
 export const HomePage = withAuthenticationRequired(Home, {
