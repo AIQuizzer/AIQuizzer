@@ -7,10 +7,9 @@ export const getCategories = query({
 
 export const getLobbies = query({
 	args: {},
-	handler: (ctx) =>
-		ctx.db
-			.query("lobbies")
-			.filter((q) => q.neq(q.field("joinedPlayers"), q.field("maxPlayers")))
-			.order("desc")
-			.collect(),
+	handler: async (ctx) => {
+		const lobbies = await ctx.db.query("lobbies").order("desc").collect()
+
+		return lobbies.filter((lobby) => lobby.players.length < lobby.maxPlayers)
+	},
 })

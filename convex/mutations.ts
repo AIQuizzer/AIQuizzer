@@ -11,7 +11,6 @@ export const createLobby = mutation({
 		return ctx.db.insert("lobbies", {
 			name: args.name,
 			players: [args.player],
-			joinedPlayers: 1,
 			maxPlayers: 2,
 		})
 	},
@@ -29,7 +28,7 @@ export const joinLobby = mutation({
 			throw new Error("Lobby not found")
 		}
 
-		if (lobby.joinedPlayers >= lobby.maxPlayers) {
+		if (lobby.players.length >= lobby.maxPlayers) {
 			throw new Error("Lobby is full")
 		}
 
@@ -43,7 +42,6 @@ export const joinLobby = mutation({
 
 		await ctx.db.patch(args.lobbyId, {
 			players: [...lobby.players, args.player],
-			joinedPlayers: lobby.joinedPlayers + 1,
 		})
 	},
 })
