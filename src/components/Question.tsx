@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import { Answer, Question as QuestionType } from "../types/quiz"
 import { ProgressBar } from "./ui/ProgressBar"
-import { Answer } from "../types/quiz"
-import { Question as QuestionType } from "../types/quiz"
-import { Button } from "../ui/button"
+
 import { cn } from "../lib"
+import { Button } from "../ui/button"
 
 interface QuestionProps {
 	activeQuestion: QuestionType
@@ -14,7 +14,7 @@ export function Question({
 	activeQuestion,
 	onActiveQuestionChange,
 }: QuestionProps) {
-	const [hasAnswered, setHasAnwered] = useState(false)
+	const [hasAnswered, setHasAnswered] = useState(false)
 	const [chosenAnswer, setChosenAnswer] = useState<Answer | null>(null)
 	const [progressBarKey, setProgressBarKey] = useState(1)
 
@@ -27,27 +27,24 @@ export function Question({
 
 	function handleOptionChoose(answer: Answer) {
 		setChosenAnswer(answer)
-		setHasAnwered(true)
+		setHasAnswered(true)
 	}
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
-			setHasAnwered(true)
+			setHasAnswered(true)
+
 			const correctAnswerTimeout = setTimeout(() => {
 				setChosenAnswer(null)
-				setHasAnwered(false)
+				setHasAnswered(false)
 				onActiveQuestionChange()
 				setProgressBarKey((prevKey) => prevKey + 1)
 			}, 5_000)
 
-			return () => {
-				clearTimeout(correctAnswerTimeout)
-			}
+			return clearTimeout(correctAnswerTimeout)
 		}, 10_000)
 
-		return () => {
-			clearTimeout(timeout)
-		}
+		return clearTimeout(timeout)
 	}, [activeQuestion])
 
 	return (
