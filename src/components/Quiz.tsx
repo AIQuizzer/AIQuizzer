@@ -1,9 +1,11 @@
+import { useState } from "react"
+import { api } from "../../convex/_generated/api"
 import Leaderboard from "./Leaderboard"
 import { Question } from "./Question"
-import { useState } from "react"
-import { Question as QuestionType } from "../types/quiz"
 
-export function Quiz({ questions }: { questions: QuestionType[] }) {
+type Questions = (typeof api.quiz.getQuestions)["_returnType"]
+
+export function Quiz({ questions }: { questions: Questions }) {
 	const [activeQuestionIndex, setActiveQuestionIndex] = useState(0)
 
 	const activeQuestion = questions[activeQuestionIndex]

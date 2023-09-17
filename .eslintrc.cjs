@@ -35,7 +35,7 @@ module.exports = {
 		"prefer-const": "warn",
 		"no-console": "warn",
 		"no-debugger": "warn",
-		"no-magic-numbers": ["error", { ignore: [1, 0, 404, 200, 500] }],
+		"no-magic-numbers": ["warn", { ignore: [1, 0, 404, 200, 500] }],
 		"no-dupe-else-if": "error",
 		"max-depth": ["error", 4],
 		"max-lines": "warn",

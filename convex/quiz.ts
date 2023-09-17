@@ -4,11 +4,11 @@ import { v } from "convex/values"
 import OpenAi from "openai"
 import { action } from "./_generated/server"
 
-interface Answer {
+export interface Answer {
 	id: string
 	value: string
 }
-interface Question {
+export interface Question {
 	id: string
 	value: string
 	answers: Answer[]
