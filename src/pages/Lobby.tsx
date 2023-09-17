@@ -1,11 +1,11 @@
 import { withAuthenticationRequired } from "@auth0/auth0-react"
-import { Redirect } from "../components/Redirect"
-import { useState, useEffect } from "react"
-import { Quiz } from "../components/Quiz"
 import { useAction } from "convex/react"
+import { useEffect, useState } from "react"
 import { api } from "../../convex/_generated/api"
-import { Question } from "../types/quiz"
 import { Lobby } from "../components/Lobby"
+import { Quiz } from "../components/Quiz"
+import { Redirect } from "../components/Redirect"
+import { Question } from "../types/quiz"
 
 const DUMMY_ANSWERS = [
 	{ id: "a", value: "Mallorca" },
@@ -49,8 +49,9 @@ export function _Lobby() {
 			const res = await getQuestions({
 				topic: "react",
 			})
-			setQuestions(res.questions)
+			setQuestions(res)
 		}
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		get()
 	}, [])
 
