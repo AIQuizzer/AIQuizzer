@@ -2,10 +2,10 @@ import { withAuthenticationRequired } from "@auth0/auth0-react"
 import { useAction } from "convex/react"
 import { useEffect, useState } from "react"
 import { api } from "../../convex/_generated/api"
+import { Question } from "../../convex/quiz"
 import { Lobby } from "../components/Lobby"
 import { Quiz } from "../components/Quiz"
 import { Redirect } from "../components/Redirect"
-import { Question } from "../types/quiz"
 
 const DUMMY_ANSWERS = [
 	{ id: "a", value: "Mallorca" },
