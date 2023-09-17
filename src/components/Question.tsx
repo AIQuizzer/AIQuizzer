@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import { Answer, Question as QuestionType } from "../types/quiz"
 import { ProgressBar } from "./ui/ProgressBar"
 
+import { Answer, Question } from "../../convex/quiz"
 import { cn } from "../lib"
 import { Button } from "../ui/button"
 
 interface QuestionProps {
-	activeQuestion: QuestionType
+	activeQuestion: Question
 	onActiveQuestionChange: () => void
 }
 
@@ -38,6 +38,7 @@ export function Question({
 				setChosenAnswer(null)
 				setHasAnswered(false)
 				onActiveQuestionChange()
+				// eslint-disable-next-line max-nested-callbacks
 				setProgressBarKey((prevKey) => prevKey + 1)
 			}, 5_000)
 
@@ -58,7 +59,7 @@ export function Question({
 			</h1>
 
 			<ul className="grid w-full grid-cols-1 gap-x-[2%] gap-y-2 sm:grid-cols-2 sm:gap-y-[6%]">
-				{activeQuestion?.answers?.map((answer: Answer, index: number) => {
+				{activeQuestion?.answers?.map((answer, index) => {
 					const isChosenByUser = answer.id === chosenAnswer?.id
 
 					const isAnswerCorrect =
