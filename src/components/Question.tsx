@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { ProgressBar } from "./ui/ProgressBar"
 
-import { Answer, Question } from "../../convex/quiz"
+import { Answer, Question as IQuestion } from "../../convex/quiz"
 import { cn } from "../lib"
 import { Button } from "../ui/button"
 
 interface QuestionProps {
-	activeQuestion: Question
+	activeQuestion: IQuestion
 	onActiveQuestionChange: () => void
 }
 
