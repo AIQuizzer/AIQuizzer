@@ -8,11 +8,13 @@ export const createLobby = mutation({
 		player: PlayerSchema,
 	},
 	handler: async (ctx, args) => {
-		return ctx.db.insert("lobbies", {
+		const id = await ctx.db.insert("lobbies", {
 			name: args.name,
 			players: [args.player],
 			maxPlayers: 2,
 		})
+
+		return id
 	},
 })
 
