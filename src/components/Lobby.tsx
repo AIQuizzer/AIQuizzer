@@ -1,69 +1,32 @@
 import { Button } from "../ui/button"
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"
+import { Lobby as LobbyType } from "../../convex/quiz"
 
-const DUMMY_USERS = [
-	{
-		id: "1",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 1",
-	},
-	{
-		id: "2",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 2",
-	},
-	{
-		id: "3",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 3",
-	},
-	{
-		id: "4",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 4",
-	},
-	{
-		id: "5",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 5",
-	},
-	{
-		id: "6",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 6",
-	},
-	{
-		id: "7",
-		image:
-			"https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
-		name: "User 7",
-	},
-]
+interface LobbyProps {
+	lobby: LobbyType | undefined
+	onStart: () => void
+}
 
-export function Lobby({ onStart }: { onStart: () => void }) {
+export function Lobby({ lobby, onStart }: LobbyProps) {
 	return (
 		<div className="align-center relative flex min-h-[calc(100%-70px)] justify-center p-7">
 			<div className="text-center">
-				<h1 className="mb-2 text-5xl font-bold">Geography</h1>
-				<h3 className="mb-10 text-2xl">7/10 players</h3>
+				<h1 className="mb-2 text-5xl font-bold">{lobby?.name}</h1>
+				<h3 className="mb-10 text-2xl">
+					{lobby?.players?.length}/{lobby?.maxPlayers} players
+				</h3>
 
-				<ul className="mb-10 grid grid-cols-2 gap-8 xs:grid-cols-3 sm:grid-cols-4">
-					{DUMMY_USERS.map((user) => (
+				<ul className="mb-10 flex max-w-lg flex-wrap justify-center gap-8">
+					{lobby?.players?.map((player) => (
 						<li
-							key={user.id}
+							key={player.id}
 							className="flex flex-col items-center justify-center"
 						>
 							<Avatar className="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px]">
-								<AvatarImage src={user.image} />
+								<AvatarImage src={player.img} />
 								<AvatarFallback>User avatar</AvatarFallback>
 							</Avatar>
-							<p>{user.name}</p>
+							<p>{player.name}</p>
 						</li>
 					))}
 				</ul>
