@@ -1,8 +1,7 @@
 import { useState } from "react"
-import { api } from "../../convex/_generated/api"
+import { Lobby, Question as QuestionType } from "../../convex/quiz"
 import Leaderboard from "./Leaderboard"
 import { Question } from "./Question"
-import { Lobby, Question as QuestionType } from "../../convex/quiz"
 
 interface QuizProps {
 	lobby: Lobby | undefined
