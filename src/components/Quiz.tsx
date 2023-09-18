@@ -2,10 +2,14 @@ import { useState } from "react"
 import { api } from "../../convex/_generated/api"
 import Leaderboard from "./Leaderboard"
 import { Question } from "./Question"
+import { Lobby, Question as QuestionType } from "../../convex/quiz"
 
-type Questions = (typeof api.quiz.getQuestions)["_returnType"]
+interface QuizProps {
+	lobby: Lobby | undefined
+	questions: QuestionType[]
+}
 
-export function Quiz({ questions }: { questions: Questions }) {
+export function Quiz({ lobby, questions }: QuizProps) {
 	const [activeQuestionIndex, setActiveQuestionIndex] = useState(0)
 
 	const activeQuestion = questions[activeQuestionIndex]
@@ -21,7 +25,7 @@ export function Quiz({ questions }: { questions: Questions }) {
 						}
 					/>
 				) : (
-					<Leaderboard numberOfQuestions={questions.length} />
+					<Leaderboard lobby={lobby} numberOfQuestions={questions.length} />
 				)}
 			</div>
 		</div>

@@ -15,10 +15,13 @@ export function RootLayout() {
 				{user && (
 					<div className="flex items-center gap-4">
 						<Avatar>
-							<AvatarImage src={user.picture} />
+							<AvatarImage
+								className="hidden xs:inline-block"
+								src={user.picture}
+							/>
 							<AvatarFallback>{user.name}</AvatarFallback>
 						</Avatar>
-						<p>{user.name}</p>
+						<p className="hidden xs:inline-block">{user.name}</p>
 						<Button onClick={() => logout()}>Logout</Button>
 					</div>
 				)}

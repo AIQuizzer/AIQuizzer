@@ -3,7 +3,21 @@
 import { v } from "convex/values"
 import OpenAi from "openai"
 import { action } from "./_generated/server"
+import { Id } from "./_generated/dataModel"
 
+export interface Player {
+	id: string
+	name: string
+	img: string
+}
+
+export interface Lobby {
+	_id: Id<"lobbies">
+	name: string
+	players: Player[]
+	maxPlayers: number
+	_creationTime: number
+}
 export interface Answer {
 	id: string
 	value: string
