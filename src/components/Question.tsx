@@ -3,7 +3,7 @@ import { ProgressBar } from "./ui/ProgressBar"
 
 import { Answer, Question as IQuestion } from "../../convex/quiz"
 import { cn } from "../lib"
-import { Button } from "../ui/button"
+import { Button } from "./ui/Button"
 
 interface QuestionProps {
 	activeQuestion: IQuestion

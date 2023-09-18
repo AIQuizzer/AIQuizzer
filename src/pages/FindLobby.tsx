@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-import { Button } from "../ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/Avatar"
+import { Button } from "../components/ui/Button"
 
 import { useAuth0 } from "@auth0/auth0-react"
 import { useNavigate } from "react-router-dom"

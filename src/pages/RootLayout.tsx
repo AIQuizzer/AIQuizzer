@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react"
 import { Link, Outlet } from "react-router-dom"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-import { Button } from "../ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/Avatar"
+import { Button } from "../components/ui/Button"
 
 export function RootLayout() {
 	const { user, logout } = useAuth0()

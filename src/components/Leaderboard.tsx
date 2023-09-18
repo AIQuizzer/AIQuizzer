@@ -1,5 +1,5 @@
-import { Button } from "../ui/button"
 import { Lobby } from "../../convex/quiz"
+import { Button } from "./ui/Button"
 
 interface LeaderboardProps {
 	lobby: Lobby | undefined
