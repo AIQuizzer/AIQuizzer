@@ -11,6 +11,7 @@ import { MainMenu } from "./pages/MainMenu.tsx"
 import { RootLayout } from "./pages/RootLayout.tsx"
 import { SelectCategory } from "./pages/SelectCategory.tsx"
 import { WelcomePage } from "./pages/Welcome.tsx"
+import { ErrorPage } from "./pages/Error.tsx"
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string)
 
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <RootLayout />,
+		errorElement: <ErrorPage />,
 		children: [
 			{ index: true, element: <WelcomePage /> },
 			{ path: "home", element: <MainMenu /> },
