@@ -1,5 +1,6 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
 import { useMutation, useQuery } from "convex/react"
+import { useNavigate } from "react-router-dom"
 import { api } from "../../convex/_generated/api"
 import { LoadingSpinner } from "../components/LoadingSpinner"
 import { Redirect } from "../components/Redirect"
@@ -8,6 +9,7 @@ import { Button } from "../ui/button"
 
 const Categories = () => {
 	const { user } = useAuth0()
+	const navigate = useNavigate()
 	const createLobby = useMutation(api.mutations.createLobby)
 	const categories = useQuery(api.queries.getCategories)
 
@@ -33,10 +35,12 @@ const Categories = () => {
 								img: user.picture,
 							}
 
-							await createLobby({
+							const lobbyId = await createLobby({
 								name: category.name,
 								player,
 							})
+
+							navigate(`/lobby/${lobbyId}`)
 						}}
 					>
 						<Avatar key={category._id}>
