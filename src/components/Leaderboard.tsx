@@ -1,7 +1,10 @@
 import { Button } from "../ui/button"
 import { Lobby } from "../../convex/quiz"
 import { api } from "../../convex/_generated/api"
-import { useQuery } from "convex/react"
+import { useQuery, useMutation } from "convex/react"
+import { useAuth0 } from "@auth0/auth0-react"
+import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 interface LeaderboardProps {
 	lobby: Lobby | undefined
@@ -12,10 +15,41 @@ export default function Leaderboard({
 	lobby,
 	numberOfQuestions,
 }: LeaderboardProps) {
-	const placeColors = ["bg-[#D4C000]", "bg-[#C0C0C0]", "bg-[#CD7F32]"]
-
+	const navigate = useNavigate()
+	const { user } = useAuth0()
 	const game = useQuery(api.queries.getGame, { lobbyId: lobby?._id })
+	const leaveLobby = useMutation(api.mutations.leaveLobby)
+	const restartGame = useMutation(api.mutations.restartGame)
+
+	const placeColors = ["bg-[#D4C000]", "bg-[#C0C0C0]", "bg-[#CD7F32]"]
+	const userId = user?.sub
 	const players = game?.players.sort((a, b) => b.score - a.score)
+
+	useEffect(() => {
+		if (lobby) {
+			if (!lobby.gameId) {
+				navigate(`/lobby/${lobby._id}`)
+				navigate(0)
+			}
+		}
+	}, [lobby])
+
+	async function handleExit() {
+		if (!lobby || !userId) return
+
+		await leaveLobby({ lobbyId: lobby._id, playerId: userId })
+		navigate("/home")
+	}
+
+	function handleRestart() {
+		if (lobby?._id) {
+			restartGame({ lobbyId: lobby._id })
+			navigate(`/lobby/${lobby._id}`)
+			navigate(0)
+		} else {
+			navigate("/lobbies")
+		}
+	}
 
 	return (
 		<div className="flex items-center justify-center">
@@ -55,8 +89,12 @@ export default function Leaderboard({
 				</ul>
 
 				<div className="mt-4 flex justify-between">
-					<Button className="px-5 py-1">exit</Button>
-					<Button className="px-5 py-1">play again</Button>
+					<Button onClick={handleExit} className="px-5 py-1">
+						exit
+					</Button>
+					<Button onClick={handleRestart} className="px-5 py-1">
+						play again
+					</Button>
 				</div>
 			</div>
 		</div>

@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 import { mutation } from "./_generated/server"
 import { PlayerSchema } from "./schema"
+import { Id } from "./_generated/dataModel"
 
 export const createLobby = mutation({
 	args: {
@@ -61,6 +62,8 @@ export const leaveLobby = mutation({
 			throw new Error("Lobby not found")
 		}
 
+		const gameId = lobby.gameId as Id<"games">
+
 		const playerInLobby = lobby.players.find(
 			(player) => player.id === args.playerId,
 		)
@@ -71,12 +74,24 @@ export const leaveLobby = mutation({
 
 		if (lobby.players.length === 1) {
 			await ctx.db.delete(args.lobbyId)
+			if (gameId) {
+				await ctx.db.delete(gameId as Id<"games">)
+			}
 			return
 		}
 
 		const filteredPlayers = lobby.players.filter(
 			(player) => player.id !== args.playerId,
 		)
+
+		if (gameId) {
+			const game = await ctx.db.get(gameId as Id<"games">)
+			const filteredGamePlayers = game?.players?.filter(
+				(player) => player.id !== args.playerId,
+			)
+
+			await ctx.db.patch(gameId, { players: filteredGamePlayers })
+		}
 
 		await ctx.db.patch(args.lobbyId, {
 			players: filteredPlayers,
@@ -89,6 +104,10 @@ export const createGame = mutation({
 		lobbyId: v.id("lobbies"),
 	},
 	handler: async (ctx, args) => {
+		if (!args.lobbyId) {
+			throw new Error("Lobby id has not been provided")
+		}
+
 		const lobby = await ctx.db.get(args.lobbyId)
 
 		const gameId = await ctx.db.insert("games", {
@@ -122,5 +141,19 @@ export const addPoint = mutation({
 
 		player.score = player.score + 1
 		await ctx.db.patch(args.gameId, { players: modifiedPlayers })
+	},
+})
+
+export const restartGame = mutation({
+	args: { lobbyId: v.id("lobbies") },
+	handler: async (ctx, args) => {
+		const lobby = await ctx.db.get(args.lobbyId)
+
+		if (!lobby) {
+			throw new Error("No lobby found")
+		}
+
+		await ctx.db.patch(args.lobbyId, { gameId: "" })
+		await ctx.db.delete(lobby.gameId as Id<"games">)
 	},
 })

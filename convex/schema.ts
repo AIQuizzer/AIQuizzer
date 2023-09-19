@@ -32,7 +32,7 @@ export default defineSchema({
 		name: v.string(),
 		players: v.array(PlayerSchema),
 		maxPlayers: v.number(),
-		gameId: v.string(),
+		gameId: v.union(v.id("games"), v.literal("")),
 	}),
 	categories: defineTable({
 		name: v.string(),

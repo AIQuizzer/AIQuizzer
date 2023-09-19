@@ -34,18 +34,18 @@ export const getGame = query({
 	args: { lobbyId: v.optional(v.id("lobbies")) },
 	handler: async (ctx, args) => {
 		if (!args.lobbyId) {
-			throw new Error("Lobby id has not been provided")
+			return null
 		}
 		const lobby = await ctx.db.get(args.lobbyId)
 
 		if (!lobby) {
-			throw new Error("No lobby found")
+			return null
 		}
 
 		const gameId = lobby.gameId as Id<"games">
 
 		if (!gameId) {
-			throw new Error("Game has not yet started.")
+			return null
 		}
 
 		const game = await ctx.db.get(gameId)
