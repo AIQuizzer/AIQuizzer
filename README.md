@@ -8,6 +8,7 @@ Simple quiz app that uses OpenAI's GPT-3 to generate questions from the categori
 - TypeScript
 - Tailwind CSS
 - Convex
+- Auth0
 - OpenAI's GPT-3
 - Shadcn
 
