@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ProgressBar } from "./ui/ProgressBar"
 import { Answer, Question as IQuestion, Lobby } from "../../convex/quiz"
 import { cn } from "../lib"
@@ -7,6 +7,7 @@ import { api } from "../../convex/_generated/api"
 import { useMutation } from "convex/react"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Id } from "../../convex/_generated/dataModel"
+// import useSound from "use-sound"
 
 interface QuestionProps {
 	lobby: Lobby | undefined
@@ -25,6 +26,16 @@ export function Question({
 	const [progressBarKey, setProgressBarKey] = useState(1)
 	const addPoint = useMutation(api.mutations.addPoint)
 	const { user } = useAuth0()
+	// const [play] = useSound(
+	// 	"https://az779572.vo.msecnd.net/res/sounds/src/themes/block/sounds-2021-10/blockchipfail.mp3%7C1-c_qu9e0jxdjwunock6qeg2.mp3",
+	// )
+	const audio = useMemo(
+		() =>
+			new Audio(
+				"https://az779572.vo.msecnd.net/res/sounds/src/themes/block/sounds-2021-10/blockchipfail.mp3%7C1-c_qu9e0jxdjwunock6qeg2.mp3",
+			),
+		[],
+	)
 
 	const playerId = user?.sub
 	const gameId = lobby?.gameId as Id<"games">
@@ -55,6 +66,10 @@ export function Question({
 			setHasAnswered(true)
 			setAreAnswersRevealed(true)
 
+			if (activeQuestion.correctAnswerId === chosenAnswer?.id) {
+				audio.play()
+			}
+
 			const correctAnswerTimeout = setTimeout(() => {
 				setAreAnswersRevealed(false)
 				setChosenAnswer(null)
@@ -74,7 +89,7 @@ export function Question({
 		}
 	}, [activeQuestion])
 
-	return (
+	return activeQuestion ? (
 		<>
 			<div className="mb-1 h-[20px] overflow-hidden rounded-md border-[1px] border-black">
 				<ProgressBar key={progressBarKey} />
@@ -115,5 +130,7 @@ export function Question({
 				})}
 			</ul>
 		</>
+	) : (
+		<div>loading</div>
 	)
 }

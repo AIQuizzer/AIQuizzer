@@ -12,10 +12,7 @@ interface LeaderboardProps {
 	numberOfQuestions: number
 }
 
-export default function Leaderboard({
-	lobby,
-	numberOfQuestions,
-}: LeaderboardProps) {
+export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 	const navigate = useNavigate()
 	const { user } = useAuth0()
 	const game = useQuery(api.queries.getGame, { lobbyId: lobby?._id })
