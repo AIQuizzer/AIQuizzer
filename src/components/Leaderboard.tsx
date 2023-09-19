@@ -2,7 +2,6 @@ import { Lobby } from "../../convex/quiz"
 
 import { useAuth0 } from "@auth0/auth0-react"
 import { useMutation, useQuery } from "convex/react"
-import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { api } from "../../convex/_generated/api"
 import { cn } from "../lib"
@@ -23,12 +22,6 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 	const placeColors = ["bg-[#D4C000]", "bg-[#C0C0C0]", "bg-[#CD7F32]"]
 	const userId = user?.sub
 	const players = game?.players.sort((a, b) => b.score - a.score)
-
-	useEffect(() => {
-		if (lobby && !lobby.gameId) return
-
-		window.location.reload()
-	}, [lobby])
 
 	async function handleExit() {
 		if (!lobby || !userId) return
