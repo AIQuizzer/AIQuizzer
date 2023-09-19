@@ -1,6 +1,5 @@
 import { withAuthenticationRequired } from "@auth0/auth0-react"
 import { Redirect } from "../components/Redirect"
-
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 

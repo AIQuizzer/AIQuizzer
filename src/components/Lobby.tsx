@@ -1,6 +1,11 @@
 import { Lobby as LobbyType } from "../../convex/quiz"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar"
 import { Button } from "./ui/Button"
+import { useNavigate } from "react-router-dom"
+import { useMutation } from "convex/react"
+import { api } from "../../convex/_generated/api"
+import { useAuth0 } from "@auth0/auth0-react"
+import { Player } from "../../convex/quiz"
 
 interface LobbyProps {
 	lobby: LobbyType | undefined
@@ -8,6 +13,25 @@ interface LobbyProps {
 }
 
 export function Lobby({ lobby, onStart }: LobbyProps) {
+	const navigate = useNavigate()
+	const { user } = useAuth0()
+	const leaveLobby = useMutation(api.mutations.leaveLobby)
+
+	const userId = user?.sub
+
+	async function handleLobbyLeave() {
+		const playerId = lobby?.players.find(
+			(player: Player) => player.id === userId,
+		)?.id
+
+		if (!lobby || !playerId) {
+			return
+		}
+
+		await leaveLobby({ lobbyId: lobby._id, playerId: playerId })
+		navigate("/lobbies")
+	}
+
 	return (
 		<div className="align-center relative flex min-h-[calc(100%-70px)] justify-center p-6">
 			<div className="text-center">
@@ -31,7 +55,10 @@ export function Lobby({ lobby, onStart }: LobbyProps) {
 					))}
 				</ul>
 				<div className="flex items-center justify-center gap-2">
-					<Button className="flex items-center justify-center px-8 py-4 text-xl font-bold xs:px-12 xs:py-6 sm:hidden ">
+					<Button
+						onClick={handleLobbyLeave}
+						className="flex items-center justify-center px-8 py-4 text-xl font-bold xs:px-12 xs:py-6 sm:hidden "
+					>
 						Leave
 					</Button>
 					<Button
@@ -42,7 +69,10 @@ export function Lobby({ lobby, onStart }: LobbyProps) {
 					</Button>
 				</div>
 			</div>
-			<Button className="fixed bottom-[5%] right-[5%] hidden px-5 py-1 sm:block sm:py-1">
+			<Button
+				onClick={handleLobbyLeave}
+				className="fixed bottom-[5%] right-[5%] hidden px-5 py-1 sm:block sm:py-1"
+			>
 				Leave
 			</Button>
 		</div>
