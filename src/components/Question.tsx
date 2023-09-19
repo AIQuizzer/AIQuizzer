@@ -1,22 +1,42 @@
 import { useEffect, useState } from "react"
 import { ProgressBar } from "./ui/ProgressBar"
-
-import { Answer, Question as IQuestion } from "../../convex/quiz"
+import { Answer, Question as IQuestion, Lobby } from "../../convex/quiz"
 import { cn } from "../lib"
 import { Button } from "../ui/button"
+import { api } from "../../convex/_generated/api"
+import { useMutation } from "convex/react"
+import { useAuth0 } from "@auth0/auth0-react"
+import { Id } from "../../convex/_generated/dataModel"
 
 interface QuestionProps {
+	lobby: Lobby | undefined
 	activeQuestion: IQuestion
 	onActiveQuestionChange: () => void
 }
 
 export function Question({
+	lobby,
 	activeQuestion,
 	onActiveQuestionChange,
 }: QuestionProps) {
+	const [areAnswersRevealed, setAreAnswersRevealed] = useState(false)
 	const [hasAnswered, setHasAnswered] = useState(false)
 	const [chosenAnswer, setChosenAnswer] = useState<Answer | null>(null)
 	const [progressBarKey, setProgressBarKey] = useState(1)
+	const addPoint = useMutation(api.mutations.addPoint)
+	const { user } = useAuth0()
+
+	const playerId = user?.sub
+	const gameId = lobby?.gameId as Id<"games">
+
+	useEffect(() => {
+		if (!lobby || !playerId) return
+		if (!activeQuestion || !chosenAnswer) return
+
+		if (activeQuestion.correctAnswerId === chosenAnswer.id) {
+			addPoint({ gameId, playerId })
+		}
+	}, [chosenAnswer])
 
 	const answerStyles = [
 		"bg-[#208110] hover:bg-[#339b28]",
@@ -33,8 +53,10 @@ export function Question({
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			setHasAnswered(true)
+			setAreAnswersRevealed(true)
 
 			const correctAnswerTimeout = setTimeout(() => {
+				setAreAnswersRevealed(false)
 				setChosenAnswer(null)
 				setHasAnswered(false)
 				onActiveQuestionChange()
@@ -42,10 +64,14 @@ export function Question({
 				setProgressBarKey((prevKey) => prevKey + 1)
 			}, 5_000)
 
-			return clearTimeout(correctAnswerTimeout)
+			return () => {
+				clearTimeout(correctAnswerTimeout)
+			}
 		}, 10_000)
 
-		return clearTimeout(timeout)
+		return () => {
+			clearTimeout(timeout)
+		}
 	}, [activeQuestion])
 
 	return (
@@ -72,9 +98,11 @@ export function Question({
 							disabled={hasAnswered}
 							className={cn(
 								`flex appearance-none items-center justify-center py-[15%] sm:py-[25%] lg:py-[17%] ${answerStyles[index]}`,
-								isAnswerCorrect &&
+								areAnswersRevealed &&
+									isAnswerCorrect &&
 									"bg-green-600 hover:bg-green-700 disabled:opacity-100",
-								isAnswerIncorrect &&
+								areAnswersRevealed &&
+									isAnswerIncorrect &&
 									"bg-red-600 hover:bg-red-700 disabled:opacity-100",
 							)}
 							onClick={() => handleOptionChoose(answer)}

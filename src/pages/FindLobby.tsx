@@ -21,7 +21,7 @@ const Lobbies = () => {
 	if (lobbies.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center gap-8">
-				<h2 className="text-3xl font-semibold">No categories found</h2>
+				<h2 className="text-3xl font-semibold">No lobbies found</h2>
 				<Button onClick={() => navigate("/categories")}>
 					Create a new one!
 				</Button>
