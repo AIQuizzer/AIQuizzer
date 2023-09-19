@@ -1,5 +1,7 @@
 import { Button } from "../ui/button"
 import { Lobby } from "../../convex/quiz"
+import { api } from "../../convex/_generated/api"
+import { useQuery } from "convex/react"
 
 interface LeaderboardProps {
 	lobby: Lobby | undefined
@@ -10,7 +12,10 @@ export default function Leaderboard({
 	lobby,
 	numberOfQuestions,
 }: LeaderboardProps) {
-	const placeColors = ["#D4C000", "#C0C0C0", "#CD7F32"]
+	const placeColors = ["bg-[#D4C000]", "bg-[#C0C0C0]", "bg-[#CD7F32]"]
+
+	const game = useQuery(api.queries.getGame, { lobbyId: lobby?._id })
+	const players = game?.players.sort((a, b) => b.score - a.score)
 
 	return (
 		<div className="flex items-center justify-center">
@@ -19,7 +24,7 @@ export default function Leaderboard({
 					Leaderboard of {lobby?.name}
 				</h1>
 				<ul>
-					{lobby?.players?.map((player, index) => {
+					{players?.map((player, index) => {
 						const place = index + 1
 
 						const backgroundColor = placeColors[index] || ""
@@ -32,7 +37,7 @@ export default function Leaderboard({
 							>
 								<span
 									className={`
-									mr-4 flex h-[30px] w-[30px] items-center justify-center rounded-full text-gray-500 bg-[${backgroundColor}] ${color}
+									mr-4 flex h-[30px] w-[30px] items-center justify-center rounded-full text-gray-500 ${backgroundColor} ${color}
 									`}
 								>
 									{index + 1}
@@ -40,7 +45,9 @@ export default function Leaderboard({
 								<img src={player.img} className="mr-2 h-[50px] w-[50px]" />
 								<div className="text-left">
 									<p className="font-bold">{player.name}</p>
-									<span>2/{numberOfQuestions}</span>
+									<span>
+										{player.score}/{numberOfQuestions}
+									</span>
 								</div>
 							</li>
 						)

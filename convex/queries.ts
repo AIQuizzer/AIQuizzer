@@ -1,5 +1,6 @@
 import { query } from "./_generated/server"
 import { v } from "convex/values"
+import { Id } from "./_generated/dataModel"
 
 export const getCategories = query({
 	args: {},
@@ -26,5 +27,29 @@ export const getLobby = query({
 			.collect()
 
 		return lobby
+	},
+})
+
+export const getGame = query({
+	args: { lobbyId: v.optional(v.id("lobbies")) },
+	handler: async (ctx, args) => {
+		if (!args.lobbyId) {
+			throw new Error("Lobby id has not been provided")
+		}
+		const lobby = await ctx.db.get(args.lobbyId)
+
+		if (!lobby) {
+			throw new Error("No lobby found")
+		}
+
+		const gameId = lobby.gameId as Id<"games">
+
+		if (!gameId) {
+			throw new Error("Game has not yet started.")
+		}
+
+		const game = await ctx.db.get(gameId)
+
+		return game
 	},
 })

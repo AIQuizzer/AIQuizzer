@@ -17,6 +17,7 @@ export interface Lobby {
 	players: Player[]
 	maxPlayers: number
 	_creationTime: number
+	gameId: string
 }
 export interface Answer {
 	id: string

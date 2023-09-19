@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react"
 import { ProgressBar } from "./ui/ProgressBar"
-
-import { Answer, Question as IQuestion } from "../../convex/quiz"
+import { Answer, Question as IQuestion, Lobby } from "../../convex/quiz"
 import { cn } from "../lib"
 import { Button } from "../ui/button"
+import { api } from "../../convex/_generated/api"
+import { useMutation } from "convex/react"
+import { useAuth0 } from "@auth0/auth0-react"
+import { Id } from "../../convex/_generated/dataModel"
 
 interface QuestionProps {
+	lobby: Lobby | undefined
 	activeQuestion: IQuestion
 	onActiveQuestionChange: () => void
 }
 
 export function Question({
+	lobby,
 	activeQuestion,
 	onActiveQuestionChange,
 }: QuestionProps) {
@@ -18,6 +23,20 @@ export function Question({
 	const [hasAnswered, setHasAnswered] = useState(false)
 	const [chosenAnswer, setChosenAnswer] = useState<Answer | null>(null)
 	const [progressBarKey, setProgressBarKey] = useState(1)
+	const addPoint = useMutation(api.mutations.addPoint)
+	const { user } = useAuth0()
+
+	const playerId = user?.sub
+	const gameId = lobby?.gameId as Id<"games">
+
+	useEffect(() => {
+		if (!lobby || !playerId) return
+		if (!activeQuestion || !chosenAnswer) return
+
+		if (activeQuestion.correctAnswerId === chosenAnswer.id) {
+			addPoint({ gameId, playerId })
+		}
+	}, [chosenAnswer])
 
 	const answerStyles = [
 		"bg-[#208110] hover:bg-[#339b28]",

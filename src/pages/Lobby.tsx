@@ -1,5 +1,5 @@
 import { withAuthenticationRequired } from "@auth0/auth0-react"
-import { useAction, useQuery } from "convex/react"
+import { useAction, useQuery, useMutation } from "convex/react"
 import { useEffect, useState } from "react"
 import { api } from "../../convex/_generated/api"
 import { Question } from "../../convex/quiz"
@@ -7,6 +7,7 @@ import { Lobby } from "../components/Lobby"
 import { Quiz } from "../components/Quiz"
 import { Redirect } from "../components/Redirect"
 import { useParams } from "react-router-dom"
+import { Id } from "../../convex/_generated/dataModel"
 
 const DUMMY_ANSWERS = [
 	{ id: "a", value: "Mallorca" },
@@ -44,9 +45,16 @@ export function _Lobby() {
 	const [questions, setQuestions] = useState<Question[]>(DUMMY_QUESTIONS)
 	const [hasStarted, setHasStarted] = useState(false)
 	const getQuestions = useAction(api.quiz.getQuestions)
-
-	const { lobbyId } = useParams()
+	const params = useParams()
+	const lobbyId = params.lobbyId as Id<"lobbies">
+	const createGame = useMutation(api.mutations.createGame)
 	const lobby = useQuery(api.queries.getLobby, { lobbyId: lobbyId! })
+
+	useEffect(() => {
+		if (lobby?.gameId) {
+			setHasStarted(true)
+		}
+	}, [lobby])
 
 	useEffect(() => {
 		async function get() {
@@ -59,10 +67,15 @@ export function _Lobby() {
 		get()
 	}, [])
 
+	function handleQuizStart() {
+		setHasStarted(true)
+		createGame({ lobbyId })
+	}
+
 	return hasStarted ? (
 		<Quiz lobby={lobby} questions={questions} />
 	) : (
-		<Lobby lobby={lobby} onStart={() => setHasStarted(true)} />
+		<Lobby lobby={lobby} onStart={handleQuizStart} />
 	)
 }
 

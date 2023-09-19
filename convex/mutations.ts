@@ -12,6 +12,7 @@ export const createLobby = mutation({
 			name: args.name,
 			players: [args.player],
 			maxPlayers: 2,
+			gameId: "",
 		})
 
 		return id
@@ -80,5 +81,46 @@ export const leaveLobby = mutation({
 		await ctx.db.patch(args.lobbyId, {
 			players: filteredPlayers,
 		})
+	},
+})
+
+export const createGame = mutation({
+	args: {
+		lobbyId: v.id("lobbies"),
+	},
+	handler: async (ctx, args) => {
+		const lobby = await ctx.db.get(args.lobbyId)
+
+		const gameId = await ctx.db.insert("games", {
+			questions: [],
+			activeQuestion: null,
+			players: lobby!.players.map((player) => ({ ...player, score: 0 })),
+		})
+
+		await ctx.db.patch(args.lobbyId, { gameId })
+	},
+})
+
+export const addPoint = mutation({
+	args: {
+		gameId: v.id("games"),
+		playerId: v.string(),
+	},
+	handler: async (ctx, args) => {
+		const room = await ctx.db.get(args.gameId)
+
+		if (!room) {
+			throw new Error("No room found")
+		}
+
+		const modifiedPlayers = room.players
+		const player = modifiedPlayers.find((player) => player.id === args.playerId)
+
+		if (!player) {
+			throw new Error("Player not found")
+		}
+
+		player.score = player.score + 1
+		await ctx.db.patch(args.gameId, { players: modifiedPlayers })
 	},
 })

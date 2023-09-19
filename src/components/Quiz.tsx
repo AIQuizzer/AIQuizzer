@@ -18,6 +18,7 @@ export function Quiz({ lobby, questions }: QuizProps) {
 			<div className="w-full text-center">
 				{activeQuestion ? (
 					<Question
+						lobby={lobby}
 						activeQuestion={activeQuestion}
 						onActiveQuestionChange={() =>
 							setActiveQuestionIndex((prevIndex) => prevIndex + 1)
