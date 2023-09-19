@@ -2,6 +2,8 @@
 
 Simple quiz app that uses OpenAI's GPT-3 to generate questions from the categories.
 
+[Link to the app](https://aiquizzer.onrender.com/)
+
 ## Tech stack
 
 - React
