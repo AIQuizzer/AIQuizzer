@@ -79,7 +79,7 @@ export const getQuestions = action({
 			apiKey,
 		})
 
-		const prompt = `Give me 3 uncommon questions about ${topic} in json format. Each question should have id, value, answers and correctAnswerId field. In answers field there should be 4 answers, each with id and value.`
+		const prompt = `Give me 3 uncommon questions about ${topic} in json format as an array of questions. Each question should have id, value, answers and correctAnswerId field. In answers field there should be 4 answers, each with id and value. `
 
 		const {
 			choices: [answer],
