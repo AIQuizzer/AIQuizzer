@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom"
 import { api } from "../../convex/_generated/api"
 import { LoadingSpinner } from "../components/LoadingSpinner"
 import { Redirect } from "../components/Redirect"
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
-import { Button } from "../ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/Avatar"
+import { Button } from "../components/ui/Button"
 
 const Categories = () => {
 	const { user } = useAuth0()

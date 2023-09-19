@@ -1,6 +1,6 @@
-import { Button } from "../ui/button"
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"
 import { Lobby as LobbyType } from "../../convex/quiz"
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar"
+import { Button } from "./ui/Button"
 import { useNavigate } from "react-router-dom"
 import { useMutation } from "convex/react"
 import { api } from "../../convex/_generated/api"

@@ -1,5 +1,6 @@
-import { Button } from "../ui/button"
 import { Lobby } from "../../convex/quiz"
+
+import { Button } from "./ui/Button"
 import { api } from "../../convex/_generated/api"
 import { useQuery, useMutation } from "convex/react"
 import { useAuth0 } from "@auth0/auth0-react"
