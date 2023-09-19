@@ -14,6 +14,7 @@ export function Question({
 	activeQuestion,
 	onActiveQuestionChange,
 }: QuestionProps) {
+	const [areAnswersRevealed, setAreAnswersRevealed] = useState(false)
 	const [hasAnswered, setHasAnswered] = useState(false)
 	const [chosenAnswer, setChosenAnswer] = useState<Answer | null>(null)
 	const [progressBarKey, setProgressBarKey] = useState(1)
@@ -33,8 +34,10 @@ export function Question({
 	useEffect(() => {
 		const timeout = setTimeout(() => {
 			setHasAnswered(true)
+			setAreAnswersRevealed(true)
 
 			const correctAnswerTimeout = setTimeout(() => {
+				setAreAnswersRevealed(false)
 				setChosenAnswer(null)
 				setHasAnswered(false)
 				onActiveQuestionChange()
@@ -42,10 +45,14 @@ export function Question({
 				setProgressBarKey((prevKey) => prevKey + 1)
 			}, 5_000)
 
-			return clearTimeout(correctAnswerTimeout)
+			return () => {
+				clearTimeout(correctAnswerTimeout)
+			}
 		}, 10_000)
 
-		return clearTimeout(timeout)
+		return () => {
+			clearTimeout(timeout)
+		}
 	}, [activeQuestion])
 
 	return (
@@ -72,9 +79,11 @@ export function Question({
 							disabled={hasAnswered}
 							className={cn(
 								`flex appearance-none items-center justify-center py-[15%] sm:py-[25%] lg:py-[17%] ${answerStyles[index]}`,
-								isAnswerCorrect &&
+								areAnswersRevealed &&
+									isAnswerCorrect &&
 									"bg-green-600 hover:bg-green-700 disabled:opacity-100",
-								isAnswerIncorrect &&
+								areAnswersRevealed &&
+									isAnswerIncorrect &&
 									"bg-red-600 hover:bg-red-700 disabled:opacity-100",
 							)}
 							onClick={() => handleOptionChoose(answer)}

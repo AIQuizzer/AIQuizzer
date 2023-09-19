@@ -29,7 +29,6 @@ import type * as quiz from "../quiz";
 declare const fullApi: ApiFromModules<{
   mutations: typeof mutations;
   queries: typeof queries;
-
   quiz: typeof quiz;
 }>;
 export declare const api: FilterApi<
