@@ -2,6 +2,7 @@ import { v } from "convex/values"
 import { mutation } from "./_generated/server"
 import { PlayerSchema } from "./schema"
 import { Id } from "./_generated/dataModel"
+import { QuestionSchema } from "./schema"
 
 export const createLobby = mutation({
 	args: {
@@ -155,5 +156,21 @@ export const restartGame = mutation({
 
 		await ctx.db.patch(args.lobbyId, { gameId: "" })
 		await ctx.db.delete(lobby.gameId as Id<"games">)
+	},
+})
+
+export const updateGame = mutation({
+	args: {
+		gameId: v.optional(v.id("games")),
+		questions: v.optional(v.array(QuestionSchema)),
+		activeQuestion: v.optional(QuestionSchema),
+	},
+	handler: async (ctx, args) => {
+		if (!args.gameId) return
+		const game = await ctx.db.get(args.gameId)
+
+		const questions = args.questions || game?.questions
+		const activeQuestion = args.activeQuestion || game?.activeQuestion
+		await ctx.db.patch(args.gameId, { questions, activeQuestion })
 	},
 })

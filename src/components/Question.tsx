@@ -26,27 +26,22 @@ export function Question({
 	const [progressBarKey, setProgressBarKey] = useState(1)
 	const addPoint = useMutation(api.mutations.addPoint)
 	const { user } = useAuth0()
-	// const [play] = useSound(
-	// 	"https://az779572.vo.msecnd.net/res/sounds/src/themes/block/sounds-2021-10/blockchipfail.mp3%7C1-c_qu9e0jxdjwunock6qeg2.mp3",
-	// )
-	const audio = useMemo(
-		() =>
-			new Audio(
-				"https://az779572.vo.msecnd.net/res/sounds/src/themes/block/sounds-2021-10/blockchipfail.mp3%7C1-c_qu9e0jxdjwunock6qeg2.mp3",
-			),
-		[],
-	)
 
 	const playerId = user?.sub
 	const gameId = lobby?.gameId as Id<"games">
 
 	useEffect(() => {
-		if (!lobby || !playerId) return
-		if (!activeQuestion || !chosenAnswer) return
+		async function handleAsync() {
+			if (!lobby || !playerId) return
+			if (!activeQuestion || !chosenAnswer) return
 
-		if (activeQuestion.correctAnswerId === chosenAnswer.id) {
-			addPoint({ gameId, playerId })
+			if (activeQuestion.correctAnswerId === chosenAnswer.id) {
+				await addPoint({ gameId, playerId })
+			}
 		}
+
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		handleAsync()
 	}, [chosenAnswer])
 
 	const answerStyles = [
@@ -65,10 +60,6 @@ export function Question({
 		const timeout = setTimeout(() => {
 			setHasAnswered(true)
 			setAreAnswersRevealed(true)
-
-			if (activeQuestion.correctAnswerId === chosenAnswer?.id) {
-				audio.play()
-			}
 
 			const correctAnswerTimeout = setTimeout(() => {
 				setAreAnswersRevealed(false)

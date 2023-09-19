@@ -1,5 +1,4 @@
 import { Lobby } from "../../convex/quiz"
-
 import { Button } from "./ui/Button"
 import { api } from "../../convex/_generated/api"
 import { useQuery, useMutation } from "convex/react"
@@ -27,7 +26,7 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 		if (lobby) {
 			if (!lobby.gameId) {
 				navigate(`/lobby/${lobby._id}`)
-				navigate(0)
+				window.location.reload()
 			}
 		}
 	}, [lobby])
@@ -39,11 +38,11 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 		navigate("/home")
 	}
 
-	function handleRestart() {
+	async function handleRestart() {
 		if (lobby?._id) {
-			restartGame({ lobbyId: lobby._id })
+			await restartGame({ lobbyId: lobby._id })
 			navigate(`/lobby/${lobby._id}`)
-			navigate(0)
+			window.location.reload()
 		} else {
 			navigate("/lobbies")
 		}

@@ -19,7 +19,7 @@ const AnswerSchema = v.object({
 	value: v.string(),
 })
 
-const QuestionSchema = v.object({
+export const QuestionSchema = v.object({
 	id: v.string(),
 	value: v.string(),
 	answers: v.array(AnswerSchema),

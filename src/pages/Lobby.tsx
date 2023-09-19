@@ -19,42 +19,55 @@ export function _Lobby() {
 
 	const getQuestions = useAction(api.quiz.getQuestions)
 	const createGame = useMutation(api.mutations.createGame)
-	const lobby = useQuery(api.queries.getLobby, { lobbyId: lobbyId! })
+	const lobby = useQuery(api.queries.getLobby, { lobbyId: lobbyId })
 	const joinLobby = useMutation(api.mutations.joinLobby)
+	const updateGame = useMutation(api.mutations.updateGame)
+	const game = useQuery(api.queries.getGame, { lobbyId: lobby?._id })
 
 	const { user } = useAuth0()
 
 	useEffect(() => {
 		// start game for all users in that lobby
-		if (lobby?.gameId) {
-			setHasStarted(true)
-		}
-
-		// user can join by pasting link
-		if (lobby) {
-			const playerInLobby = lobby.players.find(
-				(player) => player.id === user?.sub,
-			)
-
-			if (!playerInLobby) {
-				if (!user) {
-					navigate("/")
-				}
-
-				joinLobby({
-					lobbyId,
-					player: {
-						id: user?.sub || "",
-						img: user?.picture || "",
-						name: user?.name || "",
-					},
+		async function handleAsync() {
+			if (lobby?.gameId) {
+				setHasStarted(true)
+				await updateGame({
+					gameId: lobby?.gameId || undefined,
+					questions: questions,
 				})
 			}
+
+			// user can join by pasting link
+			if (lobby) {
+				const playerInLobby = lobby.players.find(
+					(player) => player.id === user?.sub,
+				)
+
+				if (!playerInLobby) {
+					if (!user) {
+						navigate("/")
+					}
+
+					await joinLobby({
+						lobbyId,
+						player: {
+							id: user?.sub || "",
+							img: user?.picture || "",
+							name: user?.name || "",
+						},
+					})
+				}
+			}
 		}
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		handleAsync()
 	}, [lobby])
 
 	useEffect(() => {
 		async function get() {
+			if (game?.questions) {
+				setQuestions(game.questions)
+			}
 			const res = await getQuestions({
 				topic: "react",
 			})
@@ -62,11 +75,11 @@ export function _Lobby() {
 		}
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		get()
-	}, [])
+	}, [game])
 
-	function handleQuizStart() {
+	async function handleQuizStart() {
 		setHasStarted(true)
-		createGame({ lobbyId })
+		await createGame({ lobbyId })
 	}
 
 	return hasStarted ? (
