@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Lobby, Question as QuestionType } from "../../convex/quiz"
-import Leaderboard from "./Leaderboard"
+import { Leaderboard } from "./Leaderboard"
 import { Question } from "./Question"
 
 interface QuizProps {

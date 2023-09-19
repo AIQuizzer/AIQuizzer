@@ -42,7 +42,7 @@ const DUMMY_QUESTIONS = [
 ]
 
 export function _Lobby() {
-	const [questions, setQuestions] = useState<Question[]>(DUMMY_QUESTIONS)
+	const [questions, setQuestions] = useState<Question[]>([])
 	const [hasStarted, setHasStarted] = useState(false)
 
 	const navigate = useNavigate()
@@ -104,7 +104,11 @@ export function _Lobby() {
 	return hasStarted ? (
 		<Quiz lobby={lobby} questions={questions} />
 	) : (
-		<Lobby lobby={lobby} onStart={handleQuizStart} />
+		<Lobby
+			isLoadingQuestions={questions.length === 0}
+			lobby={lobby}
+			onStart={handleQuizStart}
+		/>
 	)
 }
 
