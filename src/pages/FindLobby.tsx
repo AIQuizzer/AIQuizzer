@@ -34,7 +34,7 @@ const Lobbies = () => {
 			{lobbies.map((lobby) => (
 				<li
 					key={lobby._id}
-					className="border-20 flex items-center justify-center gap-14 rounded-lg bg-neutral-200 p-4"
+					className="border-20 flex items-center justify-center gap-14 rounded-lg bg-gray-300 p-4 shadow-sm shadow-black dark:bg-slate-800 dark:text-white"
 				>
 					<h2>{lobby.name}</h2>
 					<div className="flex gap-2">
@@ -47,7 +47,7 @@ const Lobbies = () => {
 
 							return (
 								<Avatar key={player.id}>
-									<AvatarImage src={player.img} />
+									<AvatarImage src={player.img} className="bg-white" />
 									<AvatarFallback>{player.name}</AvatarFallback>
 								</Avatar>
 							)

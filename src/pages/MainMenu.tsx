@@ -9,10 +9,10 @@ const _MainMenu = () => {
 		<div className="flex flex-col items-center justify-center gap-8">
 			<h1>Main Menu</h1>
 
-			<Button asChild>
+			<Button asChild className="p-8 text-xl">
 				<Link to="/lobbies">Find lobby</Link>
 			</Button>
-			<Button variant="secondary">
+			<Button asChild className="p-8 text-xl" variant="outline">
 				<Link to="/categories">Create lobby</Link>
 			</Button>
 		</div>
