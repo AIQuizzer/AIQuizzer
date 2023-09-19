@@ -1,14 +1,15 @@
 import { Lobby } from "../../convex/quiz"
 
-import { Button } from "./ui/Button"
-import { api } from "../../convex/_generated/api"
-import { useQuery, useMutation } from "convex/react"
 import { useAuth0 } from "@auth0/auth0-react"
-import { useNavigate } from "react-router-dom"
+import { useMutation, useQuery } from "convex/react"
 import { useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { api } from "../../convex/_generated/api"
+import { cn } from "../lib"
+import { Button } from "./ui/Button"
 
 interface LeaderboardProps {
-	lobby: Lobby | undefined
+	lobby?: Lobby
 	numberOfQuestions: number
 }
 
@@ -24,12 +25,9 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 	const players = game?.players.sort((a, b) => b.score - a.score)
 
 	useEffect(() => {
-		if (lobby) {
-			if (!lobby.gameId) {
-				navigate(`/lobby/${lobby._id}`)
-				navigate(0)
-			}
-		}
+		if (lobby && !lobby.gameId) return
+
+		window.location.reload()
 	}, [lobby])
 
 	async function handleExit() {
@@ -39,14 +37,14 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 		navigate("/home")
 	}
 
-	function handleRestart() {
+	async function handleRestart() {
 		if (lobby?._id) {
-			restartGame({ lobbyId: lobby._id })
-			navigate(`/lobby/${lobby._id}`)
-			navigate(0)
-		} else {
-			navigate("/lobbies")
+			await restartGame({ lobbyId: lobby._id })
+			window.location.reload()
+			return
 		}
+
+		navigate("/lobbies")
 	}
 
 	return (
@@ -60,7 +58,9 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 						const place = index + 1
 
 						const backgroundColor = placeColors[index] || ""
-						const color = place <= 3 ? "text-white" : ""
+
+						const THIRD_PLACE = 3
+						const color = place <= THIRD_PLACE ? "text-white" : ""
 
 						return (
 							<li
@@ -68,9 +68,9 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 								className="mb-3 flex w-[50vw] items-center border-[1px] border-gray-500 px-4 py-2"
 							>
 								<span
-									className={`
+									className={cn(`
 									mr-4 flex h-[30px] w-[30px] items-center justify-center rounded-full text-gray-500 ${backgroundColor} ${color}
-									`}
+									`)}
 								>
 									{index + 1}
 								</span>
@@ -88,10 +88,10 @@ export function Leaderboard({ lobby, numberOfQuestions }: LeaderboardProps) {
 
 				<div className="mt-4 flex justify-between">
 					<Button onClick={handleExit} className="px-5 py-1">
-						exit
+						Exit
 					</Button>
 					<Button onClick={handleRestart} className="px-5 py-1">
-						play again
+						Play again
 					</Button>
 				</div>
 			</div>

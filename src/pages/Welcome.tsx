@@ -17,7 +17,7 @@ export function WelcomePage() {
 				<p>Improve your skills by having fun!</p>
 				<Button
 					onClick={() => loginWithRedirect()}
-					className="mx-auto mt-4 w-[90%] py-6 text-lg font-bold hover:bg-gray-800 "
+					className="mx-auto mt-4 w-[90%] py-6 text-lg font-bold hover:bg-gray-300"
 				>
 					Sign in
 				</Button>
