@@ -1,28 +1,47 @@
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
-import { useAction, useQuery, useMutation } from "convex/react"
-import { useEffect, useState } from "react"
+import { withAuthenticationRequired } from "@auth0/auth0-react"
+import { useAction, useMutation, useQuery } from "convex/react"
+import { useCallback, useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
 import { api } from "../../convex/_generated/api"
+import { Id } from "../../convex/_generated/dataModel"
 import { Question } from "../../convex/quiz"
 import { Lobby } from "../components/Lobby"
 import { Quiz } from "../components/Quiz"
 import { Redirect } from "../components/Redirect"
-import { useNavigate, useParams } from "react-router-dom"
-import { Id } from "../../convex/_generated/dataModel"
+import { useUser } from "../lib"
 
 export function _Lobby() {
 	const [questions, setQuestions] = useState<Question[]>([])
 	const [hasStarted, setHasStarted] = useState(false)
 
-	const navigate = useNavigate()
 	const params = useParams()
-	const lobbyId = params.lobbyId as Id<"lobbies">
+	const lobbyId = (params.lobbyId ?? "") as Id<"lobbies">
 
 	const getQuestions = useAction(api.quiz.getQuestions)
 	const createGame = useMutation(api.mutations.createGame)
-	const lobby = useQuery(api.queries.getLobby, { lobbyId: lobbyId! })
+	const lobby = useQuery(api.queries.getLobby, { lobbyId })
 	const joinLobby = useMutation(api.mutations.joinLobby)
 
-	const { user } = useAuth0()
+	const player = useUser()
+
+	const joinPlayersFromLink = useCallback(async () => {
+		if (!lobby) {
+			return
+		}
+
+		const playerInLobby = lobby.players.find(
+			(currentPlayer) => currentPlayer.id === player.id,
+		)
+
+		if (playerInLobby) {
+			return
+		}
+
+		await joinLobby({
+			lobbyId,
+			player,
+		})
+	}, [])
 
 	useEffect(() => {
 		// start game for all users in that lobby
@@ -30,43 +49,24 @@ export function _Lobby() {
 			setHasStarted(true)
 		}
 
-		// user can join by pasting link
-		if (lobby) {
-			const playerInLobby = lobby.players.find(
-				(player) => player.id === user?.sub,
-			)
-
-			if (!playerInLobby) {
-				if (!user) {
-					navigate("/")
-				}
-
-				joinLobby({
-					lobbyId,
-					player: {
-						id: user?.sub || "",
-						img: user?.picture || "",
-						name: user?.name || "",
-					},
-				})
-			}
-		}
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		joinPlayersFromLink()
 	}, [lobby])
 
 	useEffect(() => {
-		async function get() {
-			const res = await getQuestions({
+		const fetchQuestions = async () => {
+			const fetchedQuestions = await getQuestions({
 				topic: "react",
 			})
-			setQuestions(res)
+			setQuestions(fetchedQuestions)
 		}
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
-		get()
+		fetchQuestions()
 	}, [])
 
-	function handleQuizStart() {
+	const handleQuizStart = async () => {
 		setHasStarted(true)
-		createGame({ lobbyId })
+		await createGame({ lobbyId })
 	}
 
 	return hasStarted ? (

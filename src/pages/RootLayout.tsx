@@ -37,8 +37,8 @@ export function RootLayout() {
 	const toggleDarkMode = useDarkMode()
 
 	return (
-		<div className="relative h-[100vh] bg-gray-100 dark:bg-gray-900">
-			<nav className="relative z-10 flex h-[70px] items-center justify-around bg-zinc-800 text-gray-100">
+		<div className="relative mb-8 h-[100vh] bg-gray-100 dark:bg-gray-900">
+			<nav className="relative z-10 mb-8 flex h-[70px] items-center justify-around bg-zinc-800 text-gray-100">
 				<Link to="/home" className="text-xl font-bold hover:opacity-80">
 					AIQuizzer
 				</Link>

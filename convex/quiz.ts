@@ -2,8 +2,8 @@
 
 import { v } from "convex/values"
 import OpenAi from "openai"
-import { action } from "./_generated/server"
 import { Id } from "./_generated/dataModel"
+import { action } from "./_generated/server"
 
 export interface Player {
 	id: string
@@ -30,10 +30,46 @@ export interface Question {
 	correctAnswerId: string
 }
 
+const DUMMY_ANSWERS = [
+	{ id: "a", value: "Mallorca" },
+	{ id: "b", value: "United States" },
+	{ id: "c", value: "Germany" },
+	{
+		id: "d",
+		value: "England",
+	},
+]
+
+const DUMMY_ANSWERS2 = [
+	{ id: "a", value: "Poland" },
+	{ id: "b", value: "France" },
+	{ id: "c", value: "Austria" },
+	{ id: "d", value: "Vatican" },
+]
+
+const DUMMY_QUESTIONS = [
+	{
+		id: "abc",
+		value: "What country from listed below is the biggest?",
+		answers: DUMMY_ANSWERS,
+		correctAnswerId: "b",
+	},
+	{
+		id: "abcd",
+		value: "What country from listed below is the smallest?",
+		answers: DUMMY_ANSWERS2,
+		correctAnswerId: "d",
+	},
+]
+
 export const getQuestions = action({
 	args: { topic: v.string() },
 	handler: async (_, { topic }) => {
 		const apiKey = process.env.OPENAI_API_KEY
+
+		if (!process.env.OPENAI_API_KEY) {
+			return DUMMY_QUESTIONS
+		}
 
 		if (!apiKey) {
 			throw new Error("No openai key provided.")

@@ -3,13 +3,13 @@ import { api } from "../../convex/_generated/api"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/Avatar"
 import { Button } from "../components/ui/Button"
 
-import { useAuth0 } from "@auth0/auth0-react"
 import { useNavigate } from "react-router-dom"
 import userPlaceholder from "../assets/userplaceholder.png"
 import { LoadingSpinner } from "../components/LoadingSpinner"
+import { useUser } from "../lib"
 
 const Lobbies = () => {
-	const { user } = useAuth0()
+	const player = useUser()
 	const joinLobby = useMutation(api.mutations.joinLobby)
 	const lobbies = useQuery(api.queries.getLobbies)
 	const navigate = useNavigate()
@@ -62,15 +62,9 @@ const Lobbies = () => {
 					<Button
 						disabled={lobby.players.length === lobby.maxPlayers}
 						onClick={async () => {
-							if (!user?.sub || !user?.name || !user?.picture) return
-
 							await joinLobby({
 								lobbyId: lobby._id,
-								player: {
-									id: user.sub,
-									name: user.name,
-									img: user.picture,
-								},
+								player,
 							})
 
 							navigate(`/lobby/${lobby._id}`)
@@ -87,7 +81,6 @@ const Lobbies = () => {
 export const FindLobby = () => {
 	return (
 		<div className="flex flex-col items-center justify-center gap-8">
-			<h1>Find Lobby</h1>
 			<Lobbies />
 		</div>
 	)

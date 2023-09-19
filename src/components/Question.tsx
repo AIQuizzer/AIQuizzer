@@ -1,18 +1,60 @@
-import { useEffect, useMemo, useState } from "react"
-import { ProgressBar } from "./ui/ProgressBar"
-import { Answer, Question as IQuestion, Lobby } from "../../convex/quiz"
-import { cn } from "../lib"
-import { Button } from "./ui/Button"
-import { api } from "../../convex/_generated/api"
 import { useMutation } from "convex/react"
-import { useAuth0 } from "@auth0/auth0-react"
+import { useEffect, useMemo, useReducer, useState } from "react"
+import { api } from "../../convex/_generated/api"
 import { Id } from "../../convex/_generated/dataModel"
-// import useSound from "use-sound"
+import { Answer, Question as IQuestion, Lobby } from "../../convex/quiz"
+import { cn, useUser } from "../lib"
+import { LoadingSpinner } from "./LoadingSpinner"
+import { Button } from "./ui/Button"
+import { ProgressBar } from "./ui/ProgressBar"
 
 interface QuestionProps {
-	lobby: Lobby | undefined
+	lobby?: Lobby
 	activeQuestion: IQuestion
 	onActiveQuestionChange: () => void
+}
+
+interface QuestionState {
+	areAnswersRevealed: boolean
+	hasAnswered: boolean
+	chosenAnswer: Answer | null
+}
+
+type QuestionsAction =
+	| {
+			type: "chooseAnswer"
+			answer: Answer
+	  }
+	| {
+			type: "answersRevealed"
+	  }
+	| {
+			type: "switchQuestion"
+	  }
+
+const questionReducer = (state: QuestionState, action: QuestionsAction) => {
+	switch (action.type) {
+		case "switchQuestion":
+			return {
+				areAnswersRevealed: false,
+				hasAnswered: false,
+				chosenAnswer: null,
+			}
+		case "answersRevealed":
+			return {
+				...state,
+				hasAnswered: true,
+				areAnswersRevealed: true,
+			}
+		case "chooseAnswer":
+			return {
+				...state,
+				hasAnswered: true,
+				chosenAnswer: action.answer,
+			}
+		default:
+			return state
+	}
 }
 
 export function Question({
@@ -20,15 +62,20 @@ export function Question({
 	activeQuestion,
 	onActiveQuestionChange,
 }: QuestionProps) {
-	const [areAnswersRevealed, setAreAnswersRevealed] = useState(false)
-	const [hasAnswered, setHasAnswered] = useState(false)
-	const [chosenAnswer, setChosenAnswer] = useState<Answer | null>(null)
+	const [{ areAnswersRevealed, hasAnswered, chosenAnswer }, dispatch] =
+		useReducer(questionReducer, {
+			areAnswersRevealed: false,
+			hasAnswered: false,
+			chosenAnswer: null,
+		})
+
 	const [progressBarKey, setProgressBarKey] = useState(1)
+	const forceRerenderProgressBar = () =>
+		setProgressBarKey((prevKey) => prevKey + 1)
+
 	const addPoint = useMutation(api.mutations.addPoint)
-	const { user } = useAuth0()
-	// const [play] = useSound(
-	// 	"https://az779572.vo.msecnd.net/res/sounds/src/themes/block/sounds-2021-10/blockchipfail.mp3%7C1-c_qu9e0jxdjwunock6qeg2.mp3",
-	// )
+	const user = useUser()
+
 	const audio = useMemo(
 		() =>
 			new Audio(
@@ -37,16 +84,14 @@ export function Question({
 		[],
 	)
 
-	const playerId = user?.sub
+	const playerId = user.id
 	const gameId = lobby?.gameId as Id<"games">
 
 	useEffect(() => {
-		if (!lobby || !playerId) return
-		if (!activeQuestion || !chosenAnswer) return
+		if (activeQuestion.correctAnswerId !== chosenAnswer?.id) return
 
-		if (activeQuestion.correctAnswerId === chosenAnswer.id) {
-			addPoint({ gameId, playerId })
-		}
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		addPoint({ gameId, playerId })
 	}, [chosenAnswer])
 
 	const answerStyles = [
@@ -57,36 +102,33 @@ export function Question({
 	]
 
 	function handleOptionChoose(answer: Answer) {
-		setChosenAnswer(answer)
-		setHasAnswered(true)
+		dispatch({ type: "chooseAnswer", answer })
 	}
 
 	useEffect(() => {
-		const timeout = setTimeout(() => {
-			setHasAnswered(true)
-			setAreAnswersRevealed(true)
+		const MS_TO_ANSWER_QUESTION = 10_000
+
+		const correctAnswerTimeout = setTimeout(async () => {
+			dispatch({ type: "answersRevealed" })
 
 			if (activeQuestion.correctAnswerId === chosenAnswer?.id) {
-				audio.play()
+				await audio.play()
 			}
 
-			const correctAnswerTimeout = setTimeout(() => {
-				setAreAnswersRevealed(false)
-				setChosenAnswer(null)
-				setHasAnswered(false)
+			const MS_TO_SWITCH_QUESTION = 5000
+
+			const switchQuestionTimeout = setTimeout(() => {
+				dispatch({ type: "switchQuestion" })
+
 				onActiveQuestionChange()
-				// eslint-disable-next-line max-nested-callbacks
-				setProgressBarKey((prevKey) => prevKey + 1)
-			}, 5_000)
 
-			return () => {
-				clearTimeout(correctAnswerTimeout)
-			}
-		}, 10_000)
+				forceRerenderProgressBar()
+			}, MS_TO_SWITCH_QUESTION)
 
-		return () => {
-			clearTimeout(timeout)
-		}
+			return () => clearTimeout(switchQuestionTimeout)
+		}, MS_TO_ANSWER_QUESTION)
+
+		return () => clearTimeout(correctAnswerTimeout)
 	}, [activeQuestion])
 
 	return activeQuestion ? (
@@ -95,7 +137,7 @@ export function Question({
 				<ProgressBar key={progressBarKey} />
 			</div>
 
-			<h1 className="mb-5 inline-block bg-white p-4 text-3xl font-bold sm:mb-16 sm:text-5xl">
+			<h1 className="mb-5 inline-block p-4 text-3xl font-bold  sm:mb-16 sm:text-5xl">
 				{activeQuestion?.value}
 			</h1>
 
@@ -131,6 +173,9 @@ export function Question({
 			</ul>
 		</>
 	) : (
-		<div>loading</div>
+		<>
+			<LoadingSpinner />
+			<span className="sr-only">Loading the question...</span>
+		</>
 	)
 }

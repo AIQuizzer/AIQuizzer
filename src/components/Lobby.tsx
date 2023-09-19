@@ -1,40 +1,29 @@
-import { Lobby as LobbyType } from "../../convex/quiz"
+import { useMutation, useQuery } from "convex/react"
+import { useNavigate, useParams } from "react-router-dom"
+import { api } from "../../convex/_generated/api"
+import { Lobby as TLobby } from "../../convex/quiz"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/Avatar"
 import { Button } from "./ui/Button"
-import { useNavigate } from "react-router-dom"
-import { useMutation } from "convex/react"
-import { api } from "../../convex/_generated/api"
-import { useAuth0 } from "@auth0/auth0-react"
-import { Player } from "../../convex/quiz"
+
+import { Id } from "../../convex/_generated/dataModel"
+import { useUser } from "../lib"
 import { LoadingSpinner } from "./LoadingSpinner"
 
 interface LobbyProps {
 	isLoadingQuestions: boolean
-	lobby: LobbyType | undefined
+	lobby?: TLobby
 	onStart: () => void
 }
 
-export function Lobby({ isLoadingQuestions, lobby, onStart }: LobbyProps) {
-	const navigate = useNavigate()
-	const { user } = useAuth0()
-	const leaveLobby = useMutation(api.mutations.leaveLobby)
-
-	const userId = user?.sub
-
-	async function handleLobbyLeave() {
-		const playerId = lobby?.players.find(
-			(player: Player) => player.id === userId,
-		)?.id
-
-		if (!lobby || !playerId) {
-			return
-		}
-
-		await leaveLobby({ lobbyId: lobby._id, playerId: playerId })
-		navigate("/lobbies")
-	}
-
-	const lobbyContent = (
+const LobbyContent = ({
+	lobby,
+	isLoadingQuestions,
+	onStart,
+	handleLobbyLeave,
+}: LobbyProps & {
+	handleLobbyLeave: () => void
+}) => {
+	return (
 		<>
 			<h1 className="mb-2 text-5xl font-bold">{lobby?.name}</h1>
 			<h3 className="mb-10 text-2xl">
@@ -56,13 +45,13 @@ export function Lobby({ isLoadingQuestions, lobby, onStart }: LobbyProps) {
 				))}
 			</ul>
 
-			<div className="flex items-center justify-center gap-2">
-				<Button
-					onClick={handleLobbyLeave}
-					className="flex items-center justify-center px-8 py-4 text-xl font-bold xs:px-12 xs:py-6 sm:hidden "
-				>
-					Leave
-				</Button>
+			<div className="flex flex-col items-center justify-center gap-4">
+				{isLoadingQuestions && (
+					<div className="flex">
+						<LoadingSpinner />
+						<p className="text-xl font-bold">Loading questions...</p>
+					</div>
+				)}
 				<Button
 					disabled={isLoadingQuestions}
 					onClick={onStart}
@@ -70,15 +59,55 @@ export function Lobby({ isLoadingQuestions, lobby, onStart }: LobbyProps) {
 				>
 					Start
 				</Button>
-				{isLoadingQuestions && <LoadingSpinner />}
+
+				<Button
+					onClick={handleLobbyLeave}
+					variant="outline"
+					className="mt-8 flex items-center justify-center px-8 py-4 text-xl font-bold xs:px-12 xs:py-6 sm:hidden "
+				>
+					Leave
+				</Button>
 			</div>
 		</>
 	)
+}
+
+export function Lobby(props: LobbyProps) {
+	const navigate = useNavigate()
+	const user = useUser()
+	const mutateLeaveLobby = useMutation(api.mutations.leaveLobby)
+
+	const params = useParams()
+	const lobbyId = (params.lobbyId ?? "") as Id<"lobbies">
+
+	const lobby = useQuery(api.queries.getLobby, { lobbyId })
+
+	const leaveLobby = async () => {
+		const playerId = lobby?.players.find((player) => player.id === userId)?.id
+
+		if (!lobby || !playerId) {
+			return
+		}
+
+		await mutateLeaveLobby({ lobbyId: lobby._id, playerId })
+	}
+
+	const userId = user?.id
+
+	async function handleLobbyLeave() {
+		await leaveLobby()
+		navigate("/lobbies")
+	}
+
+	const lobbyContentProps = {
+		...props,
+		handleLobbyLeave,
+	}
 
 	return (
 		<div className="align-center relative flex min-h-[calc(100%-70px)] justify-center p-6">
 			<div className="text-center">
-				{lobby ? lobbyContent : <LoadingSpinner />}
+				{lobby ? <LobbyContent {...lobbyContentProps} /> : <LoadingSpinner />}
 
 				<Button
 					onClick={handleLobbyLeave}
