@@ -45,6 +45,7 @@ module.exports = {
 		"react/jsx-max-depth": ["warn", { max: 5 }],
 		"import/no-default-export": "error",
 		"react/prop-types": "off",
+		"no-mixed-spaces-and-tabs": "warn",
 	},
 	settings: {
 		"import/resolver": {
