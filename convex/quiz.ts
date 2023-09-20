@@ -30,38 +30,6 @@ export interface Question {
 	correctAnswerId: string
 }
 
-const DUMMY_ANSWERS = [
-	{ id: "a", value: "Mallorca" },
-	{ id: "b", value: "United States" },
-	{ id: "c", value: "Germany" },
-	{
-		id: "d",
-		value: "England",
-	},
-]
-
-const DUMMY_ANSWERS2 = [
-	{ id: "a", value: "Poland" },
-	{ id: "b", value: "France" },
-	{ id: "c", value: "Austria" },
-	{ id: "d", value: "Vatican" },
-]
-
-const DUMMY_QUESTIONS = [
-	{
-		id: "abc",
-		value: "What country from listed below is the biggest?",
-		answers: DUMMY_ANSWERS,
-		correctAnswerId: "b",
-	},
-	{
-		id: "abcd",
-		value: "What country from listed below is the smallest?",
-		answers: DUMMY_ANSWERS2,
-		correctAnswerId: "d",
-	},
-]
-
 export const createLobby = action({
 	args: {
 		name: v.string(),
