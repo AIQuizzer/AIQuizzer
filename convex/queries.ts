@@ -1,6 +1,6 @@
-import { query } from "./_generated/server"
 import { v } from "convex/values"
 import { Id } from "./_generated/dataModel"
+import { query } from "./_generated/server"
 
 export const getCategories = query({
 	args: {},
@@ -12,7 +12,9 @@ export const getLobbies = query({
 	handler: async (ctx) => {
 		const lobbies = await ctx.db.query("lobbies").order("desc").collect()
 
-		return lobbies.filter((lobby) => lobby.players.length < lobby.maxPlayers)
+		return lobbies.filter(
+			(lobby) => lobby.players.length < lobby.maxPlayers || lobby.gameId !== "",
+		)
 	},
 })
 
