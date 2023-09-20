@@ -13,7 +13,7 @@ export const getLobbies = query({
 		const lobbies = await ctx.db.query("lobbies").order("desc").collect()
 
 		return lobbies.filter(
-			(lobby) => lobby.players.length < lobby.maxPlayers || lobby.gameId === "",
+			(lobby) => lobby.players.length < lobby.maxPlayers || lobby.gameId !== "",
 		)
 	},
 })
