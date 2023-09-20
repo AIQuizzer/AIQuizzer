@@ -33,6 +33,7 @@ export default defineSchema({
 		players: v.array(PlayerSchema),
 		maxPlayers: v.number(),
 		gameId: v.union(v.id("games"), v.literal("")),
+		questions: v.array(QuestionSchema),
 	}),
 	categories: defineTable({
 		name: v.string(),
