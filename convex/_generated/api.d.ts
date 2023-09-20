@@ -14,9 +14,12 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as internalActions from "../internalActions";
+import type * as internalMutations from "../internalMutations";
 import type * as mutations from "../mutations";
 import type * as queries from "../queries";
 import type * as quiz from "../quiz";
+import type * as types from "../types";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -27,9 +30,12 @@ import type * as quiz from "../quiz";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  internalActions: typeof internalActions;
+  internalMutations: typeof internalMutations;
   mutations: typeof mutations;
   queries: typeof queries;
   quiz: typeof quiz;
+  types: typeof types;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

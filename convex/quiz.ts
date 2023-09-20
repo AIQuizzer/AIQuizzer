@@ -1,7 +1,7 @@
 "use node"
 
 import { v } from "convex/values"
-import OpenAi from "openai"
+import { internal } from "./_generated/api"
 import { Id } from "./_generated/dataModel"
 import { action } from "./_generated/server"
 
@@ -62,37 +62,30 @@ const DUMMY_QUESTIONS = [
 	},
 ]
 
-export const getQuestions = action({
-	args: { topic: v.string() },
-	handler: async (_, { topic }) => {
-		const apiKey = process.env.OPENAI_API_KEY
+export const createLobby = action({
+	args: {
+		name: v.string(),
+		player: v.object({
+			id: v.string(),
+			name: v.string(),
+			img: v.string(),
+		}),
+	},
+	handler: async (ctx, args) => {
+		const questions = await ctx.runAction(
+			internal.internalActions.getQuestions,
+			{
+				topic: args.name,
+			},
+		)
 
-		if (!process.env.OPENAI_API_KEY) {
-			return DUMMY_QUESTIONS
-		}
-
-		if (!apiKey) {
-			throw new Error("No openai key provided.")
-		}
-
-		const openai = new OpenAi({
-			apiKey,
+		const _id = await ctx.runMutation(internal.internalMutations.insertLobby, {
+			...args,
+			questions,
 		})
 
-		const prompt = `Give me 3 uncommon questions about ${topic} in json format as an array of questions. Each question should have id, value, answers and correctAnswerId field. In answers field there should be 4 answers, each with id and value. `
+		const id = _id as Id<"lobbies">
 
-		const {
-			choices: [answer],
-		} = await openai.chat.completions.create({
-			temperature: 0.8,
-			messages: [{ role: "user", content: prompt }],
-			model: "gpt-3.5-turbo",
-		})
-
-		if (!answer.message.content) {
-			throw new Error("No answer from openai.")
-		}
-
-		return JSON.parse(answer.message.content) as Question[]
+		return id
 	},
 })

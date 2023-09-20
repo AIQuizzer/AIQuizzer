@@ -1,24 +1,7 @@
 import { v } from "convex/values"
+import { Id } from "./_generated/dataModel"
 import { mutation } from "./_generated/server"
 import { PlayerSchema } from "./schema"
-import { Id } from "./_generated/dataModel"
-
-export const createLobby = mutation({
-	args: {
-		name: v.string(),
-		player: PlayerSchema,
-	},
-	handler: async (ctx, args) => {
-		const id = await ctx.db.insert("lobbies", {
-			name: args.name,
-			players: [args.player],
-			maxPlayers: 2,
-			gameId: "",
-		})
-
-		return id
-	},
-})
 
 export const joinLobby = mutation({
 	args: {
@@ -75,7 +58,7 @@ export const leaveLobby = mutation({
 		if (lobby.players.length === 1) {
 			await ctx.db.delete(args.lobbyId)
 			if (gameId) {
-				await ctx.db.delete(gameId as Id<"games">)
+				await ctx.db.delete(gameId)
 			}
 			return
 		}
@@ -85,7 +68,7 @@ export const leaveLobby = mutation({
 		)
 
 		if (gameId) {
-			const game = await ctx.db.get(gameId as Id<"games">)
+			const game = await ctx.db.get(gameId)
 			const filteredGamePlayers = game?.players?.filter(
 				(player) => player.id !== args.playerId,
 			)
