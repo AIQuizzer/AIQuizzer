@@ -54,15 +54,19 @@ export function _Lobby() {
 	}, [lobby])
 
 	useEffect(() => {
+		if (!lobby || questions.length > 0) {
+			return
+		}
+
 		const fetchQuestions = async () => {
 			const fetchedQuestions = await getQuestions({
-				topic: "react",
+				topic: lobby.name,
 			})
 			setQuestions(fetchedQuestions)
 		}
 		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		fetchQuestions()
-	}, [])
+	}, [lobby])
 
 	const handleQuizStart = async () => {
 		setHasStarted(true)
