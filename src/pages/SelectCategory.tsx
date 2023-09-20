@@ -26,7 +26,9 @@ const Categories = () => {
 			{isCreatingLobby && (
 				<div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
 					<LoadingSpinner />
-					<p>Please wait - the questions are generated...</p>
+					<p className="text-white">
+						Please wait - the questions are generated...
+					</p>
 				</div>
 			)}
 			<ul className="flex flex-wrap items-center justify-center gap-4">
